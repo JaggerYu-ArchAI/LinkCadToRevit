@@ -1,5 +1,7 @@
 # LinkCadToRevit
 
+[![演示视频](https://i0.hdslb.com/bfs/archive/01c3e89ab94c48fe3e08f6e738144095cdc4347d.jpg)](https://www.bilibili.com/video/BV1pn7S69Ec5?t=1.8)
+
 将 CAD 图元批量转换为 Revit 模型的 Dynamo 工具集。
 
 ## 功能概述
