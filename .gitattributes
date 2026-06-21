@@ -1,0 +1,3 @@
+# 设置 GitHub 语言统计
+*.lsp linguist-vendored
+*.dyn linguist-language=Python
