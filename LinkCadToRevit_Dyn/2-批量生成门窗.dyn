@@ -1,0 +1,1041 @@
+{
+  "Uuid": "785c9dbb-ba8d-4ceb-b0a5-13d9834d95ab",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "批量生成门窗",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Math": {
+        "Key": "DSCore.Math",
+        "Value": "DSCoreNodes.dll"
+      },
+      "CAD": {
+        "Key": "CAD",
+        "Value": "BimorphNodes.dll"
+      },
+      "DesignScript.Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      },
+      "DesignScript.Builtin.Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      },
+      "CADTextData": {
+        "Key": "CADTextData",
+        "Value": "BimorphNodes.dll"
+      }
+    }
+  },
+  "Inputs": [
+    {
+      "Id": "c691883b839843afaaaf6258177445eb",
+      "Name": "选择链接CAD",
+      "Type": "selection",
+      "Type2": "hostSelection",
+      "Value": "458da98c-098b-4d7f-97a1-bc6c166c6605-0005612d",
+      "Description": "从文档选择模型图元。",
+      "SelectedIndex": 0
+    },
+    {
+      "Id": "ba71ce951cdd429e92f7f66478b524a0",
+      "Name": "宿主墙体底部的Revit标高（与链接的标高一致）",
+      "Type": "selection",
+      "Type2": "dropdownSelection",
+      "Value": "标高 1",
+      "Description": "在活动文档中选择标高",
+      "SelectedIndex": 0
+    },
+    {
+      "Id": "75d62946024748e983b5f9efe381a6b7",
+      "Name": "宿主墙体顶部的Revit标高）",
+      "Type": "selection",
+      "Type2": "dropdownSelection",
+      "Value": "标高 2",
+      "Description": "在活动文档中选择标高",
+      "SelectedIndex": 1
+    },
+    {
+      "Id": "48afeea618c8405794be0c9cdd643a7e",
+      "Name": "宿主墙体CAD图层",
+      "Type": "string",
+      "Type2": "string",
+      "Value": "WALL",
+      "Description": "创建字符串。",
+      "SelectedIndex": 0
+    },
+    {
+      "Id": "9a09d0582ede44069ec764044cfc5c44",
+      "Name": "门窗的CAD图层",
+      "Type": "string",
+      "Type2": "string",
+      "Value": "WINDOW",
+      "Description": "创建字符串。",
+      "SelectedIndex": 0
+    },
+    {
+      "Id": "0bd75d8b865749ee85325cb347238172",
+      "Name": "门窗编号的CAD图层",
+      "Type": "string",
+      "Type2": "string",
+      "Value": "WINDOW_TEXT",
+      "Description": "创建字符串。",
+      "SelectedIndex": 0
+    },
+    {
+      "Id": "80a50a0427a94cb2beae4393994da84e",
+      "Name": "窗台高度",
+      "Type": "string",
+      "Type2": "string",
+      "Value": "900",
+      "Description": "创建字符串。",
+      "SelectedIndex": 0
+    }
+  ],
+  "Outputs": [
+    {
+      "Id": "4d5c4881e41c4898bd636d629f11a19c",
+      "Name": "Watch",
+      "Type": "unknown",
+      "InitialValue": "",
+      "Description": "显示节点的输出内容"
+    }
+  ],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 200.0,
+      "WatchHeight": 200.0,
+      "Id": "3962853d6e544964b9e10c808d05b39f",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        {
+          "Id": "983ae0ce060a43a78c2c1094c05b3cb2",
+          "Name": "",
+          "Description": "要显示其输出的节点",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b704497ce5ca47ed9fa3afbe4a8e1cb0",
+          "Name": "",
+          "Description": "节点输出",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "显示节点的输出内容"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# -*- coding: utf-8 -*-\r\n# 固定导入内容\r\n# 1. 加载Python Standard和DesignScript库\r\nimport sys\r\nimport os\r\nimport math\r\nimport json\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')  # Dynamo核心几何库\r\nfrom Autodesk.DesignScript.Geometry import *\r\nimport Autodesk.DesignScript.Geometry as DynGeometry # 为避免冲突，使用DynGeometry.XX\r\n\r\nclr.AddReference('DSCoreNodes')  # Dynamo核心基础库\r\nimport DSCore  # 为避免冲突，使用DSCore.List.XX\r\n\r\nclr.AddReference('RevitNodes')  # Dynamo Revit专属节点库\r\nimport Revit   # 为避免冲突，使用Revit.Elements.XX\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# 2. 导入Revit API\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nclr.AddReference(\"System.Collections\")\r\nimport System\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\nfrom System.Collections.Generic import *\r\n\r\n# 3. 导入Revit管理服务\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# 4. 全局文档对象\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\napp = doc.Application\r\nuiApp = DocumentManager.Instance.CurrentUIApplication\r\nuidoc = uiApp.ActiveUIDocument\r\n\r\n# 该节点的输入内容将存储为 IN 变量中的一个列表。\r\ndataEnteringNode = IN\r\n\r\n# 用来获取参考墙线\r\nwall_curves = IN[0]                             \r\n# 门窗族的插入点\r\nfamily_location = DSCore.List.UniqueItems(DSCore.List.Flatten(IN[1]))    \r\ntext_origin_points = DSCore.List.UniqueItems(DSCore.List.Flatten(IN[2])) # 文本原点\r\ntext_value = DSCore.List.Flatten(IN[3])       # 文本内容\r\n\r\nlevel_start = IN[4]\r\nlevel_end = IN[5]\r\n# 窗台高度\r\nsill_height = int(IN[6])\r\n\r\n# ==================================================\r\n# 成组相连的曲线\r\n# ==================================================\r\ndef _group_curves(curves_list):\r\n    \"\"\"\r\n    成组相连的线条，可用于多段线\r\n    \"\"\"\r\n    curves = list(DSCore.List.Flatten(curves_list))\r\n    ignore_distance = 0.1\r\n    grouped_lines = []\r\n\r\n    while curves:\r\n        Shape = []\r\n        Queue = [curves.pop()]\r\n        while Queue:\r\n            current_line = Queue.pop(0)\r\n            Shape.append(current_line)\r\n            # 临时存储要加入的曲线，避免循环内重复判断\r\n            add_list = []\r\n            for potential_match in curves:\r\n                p1s = (potential_match.StartPoint, potential_match.EndPoint)\r\n                p2s = (current_line.StartPoint, current_line.EndPoint)\r\n                for p1 in p1s:\r\n                    for p2 in p2s:\r\n                        if p1.DistanceTo(p2) <= ignore_distance:\r\n                            if potential_match not in add_list:\r\n                                add_list.append(potential_match)\r\n                            break\r\n                    else:\r\n                        continue\r\n                    break\r\n            # 批量加入队列\r\n            for crv in add_list:\r\n                if crv not in Queue:\r\n                    Queue.append(crv)\r\n            # 剔除已入队曲线\r\n            curves = [c for c in curves if c not in Queue]\r\n        grouped_lines.append(Shape)\r\n    return grouped_lines\r\n\r\ngroup_curves = _group_curves(wall_curves)\r\n# OUT = group_curves\r\n\r\n# 筛选出＜3的组合，后续进行处理\r\ngroup1 = DSCore.List.Flatten([group for group in group_curves if len(group)<3])\r\ngroup2 = [group for group in group_curves if len(group)>=3]\r\n\r\n# OUT = group1\r\n\r\n# ==================================================\r\n# 成组两条平行线\r\n# ==================================================\r\ndef _parallel_curves(curves): \r\n    \"\"\"\r\n    #成组两条平行线。对于过短的平行线，需要二次筛选\r\n    \"\"\"\r\n    if len(curves) < 2:\r\n        return []\r\n    \r\n    mid_points = [c.PointAtParameter(0.5) for c in curves]\r\n    distance = [[p.DistanceTo(q) for q in mid_points] for p in mid_points]\r\n    sorted_distance = [DSCore.List.Sort(row) for row in distance]\r\n    match_distance = [row[1] for row in sorted_distance] \r\n\r\n    match_index = []\r\n    for i in range(len(distance)):\r\n        idx = DSCore.List.FirstIndexOf(distance[i], match_distance[i])\r\n        match_index.append(idx)\r\n    \r\n    filter_curves = [DSCore.List.GetItemAtIndex(curves, index) for index in match_index]\r\n    \r\n    curves_list = []\r\n    seen_pairs = set()  # 新增：记录已处理的配对索引，避免重复\r\n    \r\n    for i in range(len(curves)):\r\n        j = match_index[i]\r\n        # 关键修复：只处理 i < j 的情况，确保每对只创建一次\r\n        if i < j and (i, j) not in seen_pairs:\r\n            keys = [curves[i].Length, filter_curves[i].Length]\r\n            lst = [curves[i], filter_curves[i]]\r\n            sorted_lst = DSCore.List.SortByKey(lst, keys)[\"sortedList\"]\r\n            curves_list.append(sorted_lst)\r\n            seen_pairs.add((i, j))  # 记录已处理配对\r\n    \r\n    parallel_curves = DSCore.List.UniqueItems(curves_list)\r\n    return parallel_curves\r\n\r\n\r\nparallel_curves_original = [_parallel_curves(group) for group in group2]\r\nparallel_curves_plus = _parallel_curves(group1)\r\n# OUT = parallel_curves_plus\r\n\r\n# ==================================================\r\n# 二次筛选过短的平行线\r\n# ==================================================\r\nparallel_mask = []\r\n\r\nfor group in parallel_curves_original:\r\n    pair_mask = []\r\n    for pair in group:\r\n        line_vector1 = pair[0].Direction\r\n        line_vector2 = pair[1].Direction\r\n        mask = line_vector1.IsParallel(line_vector2)\r\n        pair_mask.append(mask)\r\n    parallel_mask.append(pair_mask)\r\n\r\n\r\nparallel_curves_original = [_parallel_curves(group) for group in group2]\r\nparallel_curves_plus = _parallel_curves(group1)\r\n#OUT = parallel_curves_plus\r\n\r\n# ==================================================\r\n# 二次筛选过短的平行线\r\n# ==================================================\r\nparallel_mask = []\r\n\r\nfor group in parallel_curves_original:\r\n    pair_mask = []\r\n    for pair in group:\r\n        line_vector1 = pair[0].Direction\r\n        line_vector2 = pair[1].Direction\r\n        mask = line_vector1.IsParallel(line_vector2)\r\n        pair_mask.append(mask)\r\n    parallel_mask.append(pair_mask)\r\n\r\n#OUT = parallel_mask\r\n\r\nparallel_curves = DSCore.List.FilterByBoolMask(parallel_curves_original, parallel_mask)[\"in\"]\r\nsecond_filter_curves = []\r\nfor i in range(len(parallel_curves_original)):\r\n    filter_curves = DSCore.List.FilterByBoolMask(parallel_curves_original[i], parallel_mask[i])[\"out\"]\r\n    second_filter_curves.append(filter_curves)       \r\n#OUT = second_filter_curves\r\n\r\ndef _get_pair_value(curves_list):\r\n    \"\"\"\r\n    #二次筛选出成对平行线\r\n    \"\"\"\r\n    # 1. 收集所有线条，统计出现次数\r\n    lst = list(curves_list)\r\n    all_lines = []\r\n    for a, b in lst:\r\n        all_lines.append(a)\r\n        all_lines.append(b)\r\n\r\n    count = {}\r\n    for line in all_lines:\r\n        count[line] = count.get(line, 0) + 1\r\n\r\n    # 2. 自动找到出现2次的线条\r\n    repeat_line = None\r\n    for k, v in count.items():\r\n        if v == 2:\r\n            repeat_line = k\r\n            break\r\n\r\n    # 3. 提取配对的另一个线条\r\n    res = []\r\n    for a, b in lst:\r\n        if a == repeat_line:\r\n            res.append(b)\r\n        elif b == repeat_line:\r\n            res.append(a)\r\n    return res\r\n\r\n# 把二次筛选的平行线添加进原有的平行线中\r\nfor i in range(len(parallel_curves)):\r\n    pair_curves = _get_pair_value(second_filter_curves[i])\r\n    if not pair_curves:\r\n        continue\r\n    new_group = DSCore.List.AddItemToEnd(pair_curves, parallel_curves[i])\r\n    parallel_curves[i] = new_group\r\n\r\n# 把parallel_curves_plus添加进原有的平行线中\r\nparallel_plus = [[group] for group in parallel_curves_plus]\r\nparallel_curves_all = DSCore.List.Join(parallel_curves, parallel_plus)\r\n\r\n#OUT = parallel_curves,parallel_plus,parallel_curves_all\r\n\r\n# 求取平行线间距作为墙厚\r\nwall_name = []\r\nfor group in parallel_curves_all:\r\n    for i in range(len(group)):\r\n        distance = int(DSCore.Math.Round(group[i][0].DistanceTo(group[i][1])))\r\n        name = str(distance) + \"mm\"\r\n        wall_name.append(name)\r\n        \r\n# ==================================================\r\n# 根据成组的平行线求中线\r\n# ==================================================\r\ndef _get_mid_line_from_parallel(parallel_curves):\r\n    ll_distance = []\r\n    ll_vector = []\r\n    for i in range(len(parallel_curves)):\r\n        distance = DSCore.Math.Round(parallel_curves[i][0].DistanceTo(parallel_curves[i][1])) * 0.5\r\n        vector = parallel_curves[i][0].NormalAtParameter(0.5)\r\n        ll_distance.append(distance)\r\n        ll_vector.append(vector)\r\n    \r\n    mid_curves = []\r\n    for i in range(len(ll_vector)):\r\n        cur = Geometry.Translate(parallel_curves[i][0], ll_vector[i], ll_distance[i])\r\n        if DSCore.Math.Round(cur.DistanceTo(parallel_curves[i][1])) > ll_distance[i]:\r\n            cur = Geometry.Translate(parallel_curves[i][0], ll_vector[i], -ll_distance[i])\r\n        mid_curves.append(cur)\r\n    return mid_curves\r\n\r\nmid_curves  = [_get_mid_line_from_parallel(group) for group in parallel_curves_all]\r\n\r\n# ==================================================\r\n# 获取墙体类型\r\n# ==================================================\r\nwall_name = DSCore.List.Flatten(wall_name)\r\ncurves = DSCore.List.Flatten(mid_curves)\r\n\r\nwall_curves = []\r\nwall_type = []\r\nfor i in range(len(wall_name)):\r\n    # 规避报错导致停止\r\n    try:\r\n        type = Revit.Elements.WallType.ByName(wall_name[i])\r\n        curve = curves[i]\r\n    except:\r\n        continue\r\n        # type = Revit.Elements.WallType.ByName(wall_name[i-1])\r\n    wall_type.append(type)\r\n    wall_curves.append(curve)\r\n\r\n\r\n# ==================================================\r\n# 获取门窗对应位置的墙中线\r\n# ==================================================\r\n# 墙中心线作为门窗生成的定位参考\r\n\r\nstart_p = [c.PointAtParameter(0) for c in wall_curves]\r\nend_p = [c.PointAtParameter(1) for c in wall_curves]\r\n\r\nall_wall_points = DSCore.List.Flatten([start_p, end_p])\r\nwall_points = DSCore.List.UniqueItems(all_wall_points)\r\n\r\ndis1 = [[p.DistanceTo(wp) for wp in wall_points] for p in family_location]\r\ndis2 = [DSCore.List.Sort(d) for d in dis1]\r\n\r\nshortest_index = []\r\nfor i in range(len(dis2)):\r\n    idx1 = DSCore.List.FirstIndexOf(dis1[i],dis2[i][0])\r\n    idx2 = DSCore.List.FirstIndexOf(dis1[i],dis2[i][1])\r\n    shortest_index.append([idx1, idx2])\r\n\r\nele = []\r\nwall_line = []\r\nwall_type_list = []\r\nfor index in shortest_index:\r\n    ele1 = DSCore.List.GetItemAtIndex(wall_points, index[0])\r\n    ele2 = DSCore.List.GetItemAtIndex(wall_points, index[1])\r\n    for i in range(len(wall_curves)):\r\n        if wall_curves[i].PointAtParameter(0) == ele1 or wall_curves[i].PointAtParameter(1) == ele1:\r\n            index = i\r\n            type = wall_type[i]\r\n            wall_type_list.append(type)\r\n            break\r\n   \r\n    line = DynGeometry.Line.ByStartPointEndPoint(ele1, ele2)\r\n    ele.append([ele1, ele2])\r\n    wall_line.append(line)\r\n\r\n\r\nwalls = []\r\nfor i in range(len(wall_line)):\r\n    wall = Revit.Elements.Wall.ByCurveAndLevels(wall_line[i], level_start, level_end, wall_type_list[i])\r\n    walls.append(wall)\r\n\r\n# OUT = wall_line,wall_type_list\r\n\r\n# ==================================================\r\n# 根据文本，获取对应的族类型\r\n# ==================================================\r\ntext_distance = [[p.DistanceTo(op) for op in text_origin_points] for p in family_location]\r\nsorted_text_distance  = [DSCore.List.Sort(row) for row in text_distance]\r\nshortest_dis = [dis[0] for dis in sorted_text_distance]\r\n\r\nshortest_index = []\r\nfor i in range(len(family_location)):\r\n    idx = DSCore.List.FirstIndexOf(text_distance[i], shortest_dis[i])\r\n    shortest_index.append(idx)\r\n\r\n\r\nfilter_text_value = [DSCore.List.GetItemAtIndex(text_value, index) for index in shortest_index]\r\nfamily_type = [Revit.Elements.FamilyType.ByName(value) for value in filter_text_value]\r\n\r\nwindow_door = []\r\nfor i in range(len(family_location)):\r\n    element = Revit.Elements.FamilyInstance.ByHostAndPoint(family_type[i], walls[i], family_location[i])\r\n    window_door.append(element)\r\n\r\nfinal_window_door = []\r\nfor i in range(len(window_door)):\r\n    if str(window_door[i].GetCategory) == \"窗\":\r\n        ele = Revit.Elements.Element.SetParameterByName(window_door[i], \"底高度\", sill_height)\r\n    else:\r\n        ele = window_door[i]\r\n    final_window_door.append(ele)\r\n        \r\nOUT = final_window_door \r\n\r\n\r\n\r\n",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "fe26dee7aa14494799ec3810caf4e83c",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "1f87a2fed5854ee7b2e03fd905d3fdf9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "09f769c8517b4feabfea1fdb4ce0ffbd",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6efe64cb32ab4c3894cb506218524da8",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dd8ee8b8cc27441b89f066bd93288107",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9044a182bd564e6786d1b2fdf46860a7",
+          "Name": "IN[4]",
+          "Description": "Input #4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a9cc611488eb4a5099d198b140c9909c",
+          "Name": "IN[5]",
+          "Description": "Input #5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "98ed2de866d5445684e21a4ad31ba781",
+          "Name": "IN[6]",
+          "Description": "Input #6",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "157f2a6e9bee43d48f2736afcfcc2814",
+          "Name": "OUT",
+          "Description": "Python 脚本结果",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "运行嵌入 Python 脚本。"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "bb854608d8a843609f70ccae277325d0",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "98a23097559440db9268d667e35cbc93",
+          "Name": "importInstance",
+          "Description": "Input the ImportInstance to convert to curves.\n\nImportInstance",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fcba885f5a97409498696a6564115373",
+          "Name": "layerNames",
+          "Description": "Input the layer names for conversion. Leave unconnected to convert all layers. Names are case-sensitive.\n\nstring[]\n默认值 : []",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3a2bb2ca9b7d4069b8dbb9e3349329db",
+          "Name": "Point[][]",
+          "Description": "Point[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b2e3d8da74b446ab8d821006dfe758a8",
+          "Name": "layerKeys[]",
+          "Description": "string[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "CAD.PointsFromCADLayers@Revit.Elements.ImportInstance,string[]",
+      "Replication": "Auto",
+      "Description": "ToLinkStatus points from a CAD link or import to Dynamo Points by layer name. Points are organized into sublists by layer. \r\rVisit bimorph.com/bimorph-nodes for support.\n\nCAD.PointsFromCADLayers (importInstance: ImportInstance, layerNames: string[] = []): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "71c558f4554b4796a2c9502110a2a744",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "57a6d1790c4443d8a3dd58c22da1d3a4",
+          "Name": "cADTextData",
+          "Description": "CADTextData",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b2f8770529ef4036b047c8ec352bbb04",
+          "Name": "string",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "CADTextData.TextValue",
+      "Replication": "Auto",
+      "Description": "The text value of this CADTextData object. \r\rVisit bimorph.com/bimorph-nodes for support\n\nCADTextData.TextValue: string"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "1fb77d291d774001b502a7fc0047f0ff",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "3ccdba6dacbd467fbd1ec7f793f9e1f7",
+          "Name": "cADTextData",
+          "Description": "CADTextData",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e9ef422ea38e44a49b341d9fcf496367",
+          "Name": "Point",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "CADTextData.OriginPoint",
+      "Replication": "Auto",
+      "Description": "The placement point of this CADTextData object.\r\r Visit bimorph.com/bimorph-nodes for support\n\nCADTextData.OriginPoint: Point"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "7fa5d38beba14a1bbd24582552cb2c0f",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "02646e44283c4acc9ee7a9b5d994a19a",
+          "Name": "importInstance",
+          "Description": "Input the ImportInstance to convert to curves.\n\nImportInstance",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5326a4d3467c4473b0dc0bbb4521ec48",
+          "Name": "layerNames",
+          "Description": "Input the layer names to filter and convert text elements. Leave unconnected to convert text on all layers. Names are case-sensitive.\n\nstring[]\n默认值 : []",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cfaffa877d694b0c991df12de231bc41",
+          "Name": "CADTextData[][]",
+          "Description": "CADTextData[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "42198bcb7c2141ac8cc3547ed7f5bd5d",
+          "Name": "layerKeys[]",
+          "Description": "string[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "CADTextData.FromLayers@Revit.Elements.ImportInstance,string[]",
+      "Replication": "Auto",
+      "Description": "Extract text from a CAD link or import by layer name. Works recursively to extract text from CAD blocks regardless of any nested depth. The node also avoids exploding the CAD instance, so it is not affected by Revits 10,000 element import limit! \r\rVisit bimorph.com/bimorph-nodes for support\n\nCADTextData.FromLayers (importInstance: ImportInstance, layerNames: string[] = []): var[]..[]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 200.0,
+      "WatchHeight": 200.0,
+      "Id": "c9a51a3bfed94d4ea2a16705486d3de2",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        {
+          "Id": "dbd525d76884482c9b819a97749b4dc1",
+          "Name": "",
+          "Description": "要显示其输出的节点",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b56a5a57edd147a8915b7bb2b44b89b9",
+          "Name": "",
+          "Description": "节点输出",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "显示节点的输出内容"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "5f4a724d54dd46e8993fd47c078e0acf",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "827054c32a61405bbcff36e0774e9cb2",
+          "Name": "importInstance",
+          "Description": "Input the ImportInstance to convert to curves.\n\nImportInstance",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9384438224b046009c7491268e60fdb5",
+          "Name": "layerNames",
+          "Description": "Input the layer names for conversion. Leave unconnected to convert all layers. Names are case-sensitive.\n\nstring[]\n默认值 : []",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "587028fc747748d7b67b0eabb1a081de",
+          "Name": "createModelCurves",
+          "Description": "Set to True to convert into Revit Model Lines.\n\nbool\n默认值 : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4e1f06a408a74ff38e5808e76621dcbf",
+          "Name": "lineStyleMap",
+          "Description": "Input the LineStyle name to map to each layer. Longest lacing is used by default.\n\nstring[]\n默认值 : []",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c4e8f7b158284106ba9425b017230739",
+          "Name": "Curve[][]",
+          "Description": "Curve[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "808b8ec99d9747c1beb33c171c63787e",
+          "Name": "layerKeys[]",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "CAD.CurvesFromCADLayers@Revit.Elements.ImportInstance,string[],bool,string[]",
+      "Replication": "Auto",
+      "Description": "ToLinkStatus curves from a CAD link or import by layer name. Enter LineStyle names to map to each layer during conversion.\r\rThe node is optimized to convert curve types that typically fail when using Dynamo Element.Curves node or Revit Explode.\r\rVisit bimorph.com/bimorph-nodes for support.\n\nCAD.CurvesFromCADLayers (importInstance: ImportInstance, layerNames: string[] = [], createModelCurves: bool = false, lineStyleMap: string[] = []): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "458da98c-098b-4d7f-97a1-bc6c166c6605-0005612d"
+      ],
+      "Id": "c691883b839843afaaaf6258177445eb",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "eb822304ad3545139a335576f0ba4778",
+          "Name": "Element",
+          "Description": "选定的元素。",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "从文档选择模型图元。"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
+      "SelectedIndex": 0,
+      "SelectedString": "标高 1",
+      "Id": "ba71ce951cdd429e92f7f66478b524a0",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6fc9cb3a8f2546829d4e88415b9fff97",
+          "Name": "Levels",
+          "Description": "选定的 Levels",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "在活动文档中选择标高"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.Levels, DSRevitNodesUI",
+      "SelectedIndex": 1,
+      "SelectedString": "标高 2",
+      "Id": "75d62946024748e983b5f9efe381a6b7",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a265d4f81e5444c0b4cbd2ec7ee342f2",
+          "Name": "Levels",
+          "Description": "选定的 Levels",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "在活动文档中选择标高"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 200.0,
+      "WatchHeight": 200.0,
+      "Id": "4d5c4881e41c4898bd636d629f11a19c",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        {
+          "Id": "75769dc21e374c6cae19dfd444ca228a",
+          "Name": "",
+          "Description": "要显示其输出的节点",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "25eff26aff744e35990489c24770a5b2",
+          "Name": "",
+          "Description": "节点输出",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "显示节点的输出内容"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Id": "48afeea618c8405794be0c9cdd643a7e",
+      "NodeType": "StringInputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f6eeba5e3347482699f4d56cb5a6db96",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "创建字符串。",
+      "InputValue": "WALL"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Id": "9a09d0582ede44069ec764044cfc5c44",
+      "NodeType": "StringInputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2b37a8ec798946b797e2dfdd1cb74ac9",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "创建字符串。",
+      "InputValue": "WINDOW"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Id": "0bd75d8b865749ee85325cb347238172",
+      "NodeType": "StringInputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6670af264225465dbe4b925ff182fec7",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "创建字符串。",
+      "InputValue": "WINDOW_TEXT"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Id": "80a50a0427a94cb2beae4393994da84e",
+      "NodeType": "StringInputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "259fc89acf11440392b1a8964ea9fe52",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "创建字符串。",
+      "InputValue": "900"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b704497ce5ca47ed9fa3afbe4a8e1cb0",
+      "End": "09f769c8517b4feabfea1fdb4ce0ffbd",
+      "Id": "8c712206b91248e9bb193cf40c6e5843",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "157f2a6e9bee43d48f2736afcfcc2814",
+      "End": "75769dc21e374c6cae19dfd444ca228a",
+      "Id": "418109d9b31f40f9a0abea877adbad7e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "3a2bb2ca9b7d4069b8dbb9e3349329db",
+      "End": "983ae0ce060a43a78c2c1094c05b3cb2",
+      "Id": "4f33e983c5644c1588c7ecc3b2b63700",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b2f8770529ef4036b047c8ec352bbb04",
+      "End": "dd8ee8b8cc27441b89f066bd93288107",
+      "Id": "914fb18fbda24282b2c9419e37853bb6",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e9ef422ea38e44a49b341d9fcf496367",
+      "End": "6efe64cb32ab4c3894cb506218524da8",
+      "Id": "37d738a34c72436c8c8d876f35ccfc0d",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "cfaffa877d694b0c991df12de231bc41",
+      "End": "57a6d1790c4443d8a3dd58c22da1d3a4",
+      "Id": "de148612b3594f499670686c1e4f8384",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "cfaffa877d694b0c991df12de231bc41",
+      "End": "3ccdba6dacbd467fbd1ec7f793f9e1f7",
+      "Id": "8797acfbf8aa4d32847455c2dd79640e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b56a5a57edd147a8915b7bb2b44b89b9",
+      "End": "1f87a2fed5854ee7b2e03fd905d3fdf9",
+      "Id": "c653ae2648e0440d931d996df8129a5b",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "c4e8f7b158284106ba9425b017230739",
+      "End": "dbd525d76884482c9b819a97749b4dc1",
+      "Id": "5c7d41cd1a7644b2bb1af77db28711f5",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "eb822304ad3545139a335576f0ba4778",
+      "End": "827054c32a61405bbcff36e0774e9cb2",
+      "Id": "9958700b973e4a14940300d802f72182",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "eb822304ad3545139a335576f0ba4778",
+      "End": "02646e44283c4acc9ee7a9b5d994a19a",
+      "Id": "75fe8610f6e94cd7b6eeed62b75ddb00",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "eb822304ad3545139a335576f0ba4778",
+      "End": "98a23097559440db9268d667e35cbc93",
+      "Id": "def97bfe014549aeb9392e1001146aae",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "6fc9cb3a8f2546829d4e88415b9fff97",
+      "End": "9044a182bd564e6786d1b2fdf46860a7",
+      "Id": "6054073cb5a64cef8176acdfa021f2db",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "a265d4f81e5444c0b4cbd2ec7ee342f2",
+      "End": "a9cc611488eb4a5099d198b140c9909c",
+      "Id": "1851e006f62848e380b47c0580e641e0",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "f6eeba5e3347482699f4d56cb5a6db96",
+      "End": "9384438224b046009c7491268e60fdb5",
+      "Id": "6d9a73027a694c428fcabc9cbdc2b31f",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "2b37a8ec798946b797e2dfdd1cb74ac9",
+      "End": "fcba885f5a97409498696a6564115373",
+      "Id": "e9cde7db61e34df193fd7fad67d688bf",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "6670af264225465dbe4b925ff182fec7",
+      "End": "5326a4d3467c4473b0dc0bbb4521ec48",
+      "Id": "b4cfd37b8437400786107839168c78c8",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "259fc89acf11440392b1a8964ea9fe52",
+      "End": "98ed2de866d5445684e21a4ad31ba781",
+      "Id": "f017d260b9e74b62a845c89eaff165ba",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "bimorphNodes",
+      "Version": "4.2.4",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "bb854608d8a843609f70ccae277325d0",
+        "71c558f4554b4796a2c9502110a2a744",
+        "1fb77d291d774001b502a7fc0047f0ff",
+        "7fa5d38beba14a1bbd24582552cb2c0f",
+        "5f4a724d54dd46e8993fd47c078e0acf"
+      ]
+    }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "特性",
+      "Version": "2.19",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "6.1",
+      "Data": {}
+    }
+  ],
+  "Author": "None provided",
+  "Linting": {
+    "activeLinter": "无",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.19.3.6394",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "背景预览(_B)",
+      "EyeX": 17757.9296875,
+      "EyeY": 87651.34375,
+      "EyeZ": -40317.01171875,
+      "LookX": -81.390625,
+      "LookY": -99665.1484375,
+      "LookZ": 24626.78125,
+      "UpX": 0.0033052582293748856,
+      "UpY": -0.026175964623689651,
+      "UpZ": -0.99965190887451172
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "3962853d6e544964b9e10c808d05b39f",
+        "Name": "Watch",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -4899.3125233987494,
+        "Y": 823.23021699759829
+      },
+      {
+        "Id": "fe26dee7aa14494799ec3810caf4e83c",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -4369.8940018219773,
+        "Y": 1218.0137397647261
+      },
+      {
+        "Id": "bb854608d8a843609f70ccae277325d0",
+        "Name": "CAD.PointsFromCADLayers",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -5394.8068522884278,
+        "Y": 956.09542582082634
+      },
+      {
+        "Id": "71c558f4554b4796a2c9502110a2a744",
+        "Name": "CADTextData.TextValue",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -4891.3741098968985,
+        "Y": 1277.793341554788
+      },
+      {
+        "Id": "1fb77d291d774001b502a7fc0047f0ff",
+        "Name": "CADTextData.OriginPoint",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -4891.3741098968985,
+        "Y": 1122.8592388742945
+      },
+      {
+        "Id": "7fa5d38beba14a1bbd24582552cb2c0f",
+        "Name": "CADTextData.FromLayers",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -5394.8068522884278,
+        "Y": 1198.6543452206517
+      },
+      {
+        "Id": "c9a51a3bfed94d4ea2a16705486d3de2",
+        "Name": "Watch",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -4899.3125233987494,
+        "Y": 513.057544618571
+      },
+      {
+        "Id": "5f4a724d54dd46e8993fd47c078e0acf",
+        "Name": "CAD.CurvesFromCADLayers",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": false,
+        "X": -5394.8068522884278,
+        "Y": 698.20861156224748
+      },
+      {
+        "Id": "c691883b839843afaaaf6258177445eb",
+        "Name": "选择链接CAD",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -6025.7354178402629,
+        "Y": 654.34731351065307
+      },
+      {
+        "Id": "ba71ce951cdd429e92f7f66478b524a0",
+        "Name": "宿主墙体底部的Revit标高（与链接的标高一致）",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -6028.694746469575,
+        "Y": 1243.6018643072291
+      },
+      {
+        "Id": "75d62946024748e983b5f9efe381a6b7",
+        "Name": "宿主墙体顶部的Revit标高）",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -6028.694746469575,
+        "Y": 1386.1655020063731
+      },
+      {
+        "Id": "4d5c4881e41c4898bd636d629f11a19c",
+        "Name": "Watch",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -4055.44416787768,
+        "Y": 1218.8602876146808
+      },
+      {
+        "Id": "48afeea618c8405794be0c9cdd643a7e",
+        "Name": "宿主墙体CAD图层",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -6019.1423811677332,
+        "Y": 813.93882256548784
+      },
+      {
+        "Id": "9a09d0582ede44069ec764044cfc5c44",
+        "Name": "门窗的CAD图层",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -6024.2993886878876,
+        "Y": 958.47458890894109
+      },
+      {
+        "Id": "0bd75d8b865749ee85325cb347238172",
+        "Name": "门窗编号的CAD图层",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -6024.2993886878876,
+        "Y": 1101.0382266080851
+      },
+      {
+        "Id": "80a50a0427a94cb2beae4393994da84e",
+        "Name": "窗台高度",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -6025.2311115053408,
+        "Y": 1524.3934499367936
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "7a47876001aa449aaaa8dd151a9182ca",
+        "Title": "输入",
+        "DescriptionText": "说明 <双击此处编辑组说明>",
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "c691883b839843afaaaf6258177445eb",
+          "ba71ce951cdd429e92f7f66478b524a0",
+          "75d62946024748e983b5f9efe381a6b7",
+          "48afeea618c8405794be0c9cdd643a7e",
+          "9a09d0582ede44069ec764044cfc5c44",
+          "0bd75d8b865749ee85325cb347238172",
+          "80a50a0427a94cb2beae4393994da84e"
+        ],
+        "HasNestedGroups": false,
+        "Left": -6038.694746469575,
+        "Top": 581.34731351065307,
+        "Width": 435.0,
+        "Height": 1075.0461364261405,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 654.34731351065307,
+        "InitialHeight": 1015.0461364261405,
+        "TextblockHeight": 63.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "34815c96c96f4021b0c454113cfc4d96",
+        "Title": "输出",
+        "DescriptionText": "说明 <双击此处编辑组说明>",
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "4d5c4881e41c4898bd636d629f11a19c"
+        ],
+        "HasNestedGroups": false,
+        "Left": -4065.44416787768,
+        "Top": 1145.8602876146808,
+        "Width": 297.0,
+        "Height": 371.0,
+        "FontSize": 36.0,
+        "GroupStyleId": "00000000-0000-0000-0000-000000000000",
+        "InitialTop": 1218.8602876146808,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 63.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 3308.5487654548542,
+    "Y": -204.0458234096169,
+    "Zoom": 0.50706631278118131
+  }
+}

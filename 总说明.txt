@@ -1,0 +1,7 @@
+【使用说明】
+
+第一步：将依赖节点包文件夹下的 bimorphNodes 包放在Dynamo第三方包路径下：C:\Users\用户名\AppData\Roaming\Dynamo\Dynamo Revit\2.XX\packages\
+
+第二步：打开测试文件与说明文件夹下的revit文件进行测试（附有cad-revit的标准说明）
+
+第三步：打开dynamo播放器，将LinkCadToRevit_Dyn添加到播放器文件夹，即可测试。

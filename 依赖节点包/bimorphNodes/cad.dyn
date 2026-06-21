@@ -1,0 +1,482 @@
+{
+  "Uuid": "0c343e10-15d1-4142-8a16-637d797affb6",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "cad",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "CADTextData": {
+        "Key": "CADTextData",
+        "Value": "BimorphNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "DSRevitNodesUI.ElementsOfType, DSRevitNodesUI",
+      "Id": "08c5032bfc9943f482417d1c166250f3",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        {
+          "Id": "2fceb4c515b54ebcaccb5beb62c7aa16",
+          "Name": "element class",
+          "Description": "图元类。",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "382aed50cf134dce9bcbc1178aa3a375",
+          "Name": "elements",
+          "Description": "给定类的活动文档中的所有图元。",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "给定类的活动文档中的所有图元。"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.ElementTypes, DSRevitNodesUI",
+      "SelectedIndex": 178,
+      "SelectedString": "ImportInstance",
+      "Id": "3054792868f049cc87a668df9b04f13c",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e38093241613489faf2ceae952d2ad09",
+          "Name": "Classes",
+          "Description": "选定的 Classes",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "所有图元子类。"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "7833a9496e014a3b877f3977f72379ee",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "cf8e96fa8f4547f9999254ddbb9b780a",
+          "Name": "importInstance",
+          "Description": "Input the ImportInstance to convert to curves.\n\nImportInstance",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "abb52f33d62c4ba3b83031588e5f42b9",
+          "Name": "layerNames",
+          "Description": "Input the layer names for conversion. Leave unconnected to convert all layers. Names are case-sensitive.\n\nstring[]\n默认值 : []",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2c224a2d53d54697bff7743a01f22a00",
+          "Name": "createModelCurves",
+          "Description": "Set to True to convert into Revit Model Lines.\n\nbool\n默认值 : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f5426c78065f4b3fa3184b8a458af1d9",
+          "Name": "lineStyleMap",
+          "Description": "Input the LineStyle name to map to each layer. Longest lacing is used by default.\n\nstring[]\n默认值 : []",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9d7f3f633cde436cadd0c105bf298b75",
+          "Name": "Curve[][]",
+          "Description": "Curve[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f90a23d8ef6041e7830f4667469b93b3",
+          "Name": "layerKeys[]",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "CAD.CurvesFromCADLayers@Revit.Elements.ImportInstance,string[],bool,string[]",
+      "Replication": "Auto",
+      "Description": "ToLinkStatus curves from a CAD link or import by layer name. Enter LineStyle names to map to each layer during conversion.\r\rThe node is optimized to convert curve types that typically fail when using Dynamo Element.Curves node or Revit Explode.\r\rVisit bimorph.com/bimorph-nodes for support.\n\nCAD.CurvesFromCADLayers (importInstance: ImportInstance, layerNames: string[] = [], createModelCurves: bool = false, lineStyleMap: string[] = []): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "eaeb3611b058465ca926035cc2c0c892",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0868777b892e44638ef6200269f6d069",
+          "Name": "",
+          "Description": "行 1 中的表达式值",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "允许直接编写 DesignScript 代码",
+      "Code": "\"BM1\";"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# 1. 加载Python Standard和DesignScript库\r\nimport sys\r\nimport os\r\nimport math\r\nimport json\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')  # Dynamo核心几何库\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference('DSCoreNodes')  # Dynamo核心基础库\r\nimport DSCore  # 为避免冲突，使用DSCore.List.XX\r\n\r\nclr.AddReference('RevitNodes')  # Dynamo Revit专属节点库\r\nimport Revit   # 为避免冲突，使用Revit.Elements.XX\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# 2. 导入Revit API\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nclr.AddReference(\"System.Collections\")\r\nimport System\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\nfrom System.Collections.Generic import *\r\n\r\n# 3. 导入Revit管理服务\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# 4. 全局文档对象\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\napp = doc.Application\r\nuiApp = DocumentManager.Instance.CurrentUIApplication\r\nuidoc = uiApp.ActiveUIDocument\r\n\r\n\r\n# 必须和Packages下的包文件夹名完全一致（大小写敏感）\r\nPACKAGE_NAME = \"ArchAI\"\r\nOUT = \"\"  # 初始化OUT，避免未定义\r\n\r\n# ===================== 1. 自动定位节点包的根路径 =====================\r\n# 获取APPDATA路径\r\nappdata = os.environ.get(\"APPDATA\")\r\n# 定位Dynamo Revit根目录\r\ndynamo_root = os.path.join(appdata, \"Dynamo\", \"Dynamo Revit\")\r\nif not os.path.isdir(dynamo_root):\r\n    print(f\"Dynamo根目录不存在 - {dynamo_root}\")\r\n# 遍历版本目录，查找包路径\r\nlib_path = None\r\ntry:\r\n    for version_dir in os.listdir(dynamo_root):\r\n        version_path = os.path.join(dynamo_root, version_dir)\r\n        # 跳过非目录\r\n        if not os.path.isdir(version_path):\r\n            continue\r\n        temp_lib = os.path.join(version_path, \"Packages\", PACKAGE_NAME)\r\n        # 找到第一个有效路径就停止\r\n        if os.path.exists(temp_lib):\r\n            lib_path = temp_lib\r\n            break\r\nexcept OSError as e:\r\n    print(f\"遍历目录时出错：{str(e)}\")\r\n\r\ndef get_package_lib_path():\r\n    if lib_path not in sys.path:\r\n        sys.path.append(lib_path)\r\n    return lib_path, f\"lib路径：{lib_path}\" if lib_path else \"未找到包的节点包目录\"\r\n\r\n# 初始化路径\r\nget_package_lib_path()\r\n\r\n\r\n# ==============================================\r\n# 加载 Bimorph 所有 DLL\r\n# ==============================================\r\nlib_path, path_msg = get_package_lib_path()\r\ndll_dir = os.path.join(lib_path, \"bin\")\r\nsys.path.append(dll_dir)\r\n\r\ndlls = [\r\n    \"BimorphNodes.dll\",\r\n    \"BimorphNodes.Core.dll\",\r\n    \"BimorphNodes.Geometry.dll\",\r\n    \"BimorphNodes.Compatibility.dll\",\r\n    \"netDxf.netstandard.dll\"\r\n]\r\n\r\nfor dll in dlls:\r\n    path = System.IO.Path.Combine(dll_dir, dll)\r\n    System.Reflection.Assembly.LoadFrom(path)\r\n       \r\n\r\n\r\n# ==============================================\r\n# Python列表 → .NET List<string>\r\n# 使用 BimorphNodes 节点包中节点\r\n# ==============================================\r\ndef _to_net(py_list):\r\n    \"\"\"将Python列表转换为.NET字符串泛型列表\"\"\"\r\n    net_list = List[System.String]()\r\n    for item in py_list:\r\n        net_list.Add(str(item))\r\n    return net_list\r\n\r\n\r\n\r\ndef _cad_curves_from_cad_layers(layer_names, create_model_curves = False, line_style_map = None):\r\n    \"\"\"\r\n    根据链接CAD文件，批量生成结构框架（结构柱或结构梁）\r\n    :param layer_names: 链接CAD文件中结构框架的图层名称列表\r\n    :param create_model_curves: 默认不创建模型线条\r\n    :param line_style_map: 默认不映射线条类型\r\n    :return: 字典，包含\"Curve[][]\" 与 \"layerKeys[]\"\r\n    使用 BimorphNodes 节点包中节点，默认选择第一个链接CAD文件\r\n    \"\"\"\r\n    collector = FilteredElementCollector(doc).OfClass(ImportInstance).ToElements()\r\n    import_instance = collector[0].ToDSType(True)\r\n    ln = _to_net(layer_names)\r\n    lsm = _to_net(line_style_map or [])\r\n    \r\n    # ==============================================\r\n    # 查找 CAD 类\r\n    # ==============================================\r\n    Cad = None\r\n    for asm in System.AppDomain.CurrentDomain.GetAssemblies():\r\n        if \"Bimorph\" in asm.GetName().Name:\r\n            for t in asm.GetTypes():\r\n                if t.Name == \"CAD\":\r\n                    Cad = t\r\n            if Cad: break\r\n            \r\n    # ==============================================\r\n    # 查找目标方法\r\n    # ==============================================\r\n    method = None\r\n    if Cad:\r\n        for m in Cad.GetMethods():\r\n            if \"CurvesFromCADLayers\" in m.Name:\r\n                method = m\r\n                break\r\n    \r\n    # ==============================================\r\n    # 使用方法\r\n    # ==============================================\r\n    try:\r\n        # 4个参数：ImportInstance, LayerNames, create_model_curves, line_style_map\r\n        param_list = [import_instance, ln, create_model_curves, lsm]\r\n        # 调用静态方法\r\n        result = method.Invoke(None, param_list)\r\n        return result\r\n    \r\n    except Exception as e:\r\n        return f\"错误：{str(e)}\"\r\n        \r\n        \r\ndef _cad_text_data_from_layers(layer_names = None):\r\n    \"\"\"\r\n    根据链接CAD文件，批量生成结构框架（结构柱或结构梁）\r\n    :param layer_names: 链接CAD文件中文字的图层名称列表\r\n    :return: 字典，包含\"layerKeys[]\"与\"CADTextData[][]\" \r\n    使用 BimorphNodes 节点包中节点，默认选择第一个链接CAD文件\r\n    \"\"\"\r\n    collector = FilteredElementCollector(doc).OfClass(ImportInstance).ToElements()\r\n    import_instance = collector[0].ToDSType(True)\r\n    ln = _to_net(layer_names or [])\r\n    \r\n    # ==============================================\r\n    # 查找 CADTextData 类\r\n    # ==============================================\r\n    CadTextData = None\r\n    for asm in System.AppDomain.CurrentDomain.GetAssemblies():\r\n        if \"Bimorph\" in asm.GetName().Name:\r\n            for t in asm.GetTypes():\r\n                if t.Name == \"CADTextData\":\r\n                    CadTextData = t\r\n            if CadTextData: break\r\n            \r\n    # ==============================================\r\n    # 查找目标方法\r\n    # ==============================================\r\n    method = None\r\n    if CadTextData:\r\n        for m in CadTextData.GetMethods():\r\n            if \"FromLayers\" in m.Name:\r\n                method = m\r\n                break\r\n    \r\n    # ==============================================\r\n    # 使用方法\r\n    # ==============================================\r\n    try:\r\n        # 2个参数：ImportInstance, LayerNames\r\n        param_list = [import_instance, ln]\r\n        # 调用静态方法\r\n        result = method.Invoke(None, param_list)\r\n        return result\r\n    \r\n    except Exception as e:\r\n        return f\"错误：{str(e)}\"\r\n        \r\n        \r\ndef _cad_text_data_origin_point(cad_text_data):\r\n    \"\"\"\r\n    根据链接CAD文件，批量生成结构框架（结构柱或结构梁）\r\n    :param cad_text_data: 由函数_cad_text_data_from_layers()返回，使用\"CADTextData[][]\"键值\r\n    :return: 点列表\r\n    使用 BimorphNodes 节点包中节点\r\n    \"\"\"\r\n    \r\n    # ==============================================\r\n    # 查找 CADTextData 类\r\n    # ==============================================\r\n    CadTextData = None\r\n    for asm in System.AppDomain.CurrentDomain.GetAssemblies():\r\n        if \"Bimorph\" in asm.GetName().Name:\r\n            for t in asm.GetTypes():\r\n                if t.Name == \"CADTextData\":\r\n                    CadTextData = t\r\n            if CadTextData: break\r\n            \r\n    # ==============================================\r\n    # 查找目标方法\r\n    # ==============================================\r\n    method = None\r\n    if CadTextData:\r\n        for m in CadTextData.GetMethods():\r\n            if \"OriginPoint\" in m.Name:\r\n                method = m\r\n                break\r\n    \r\n    # ==============================================\r\n    # 使用方法\r\n    # ==============================================\r\n    try:\r\n        # 单个对象\r\n        if not isinstance(cad_text_data, list):\r\n            return method.Invoke(cad_text_data, [])\r\n        # 二维列表\r\n        elif not isinstance(cad_text_data[0], list):\r\n            res = []\r\n            for row in cad_text_data:\r\n                row_res = [method.Invoke(item, []) for item in row]\r\n                res.append(row_res)\r\n            return res\r\n        # 一维列表\r\n        else:\r\n            return [method.Invoke(item, []) for item in cad_text_data]\r\n    \r\n    except Exception as e:\r\n        return f\"错误：{str(e)}\"\r\n        \r\ndef _cad_text_data_text_value(cad_text_data):\r\n    \"\"\"\r\n    根据链接CAD文件，批量生成结构框架（结构柱或结构梁）\r\n    :param cad_text_data: 由函数_cad_text_data_from_layers()返回，使用\"CADTextData[][]\"键值\r\n    :return: 点列表\r\n    使用 BimorphNodes 节点包中节点\r\n    \"\"\"\r\n    \r\n    # ==============================================\r\n    # 查找 CADTextData 类\r\n    # ==============================================\r\n    CadTextData = None\r\n    for asm in System.AppDomain.CurrentDomain.GetAssemblies():\r\n        if \"Bimorph\" in asm.GetName().Name:\r\n            for t in asm.GetTypes():\r\n                if t.Name == \"CADTextData\":\r\n                    CadTextData = t\r\n            if CadTextData: break\r\n            \r\n    # ==============================================\r\n    # 查找目标方法\r\n    # ==============================================\r\n    method = None\r\n    if CadTextData:\r\n        for m in CadTextData.GetMethods():\r\n            if \"TextValue\" in m.Name:\r\n                method = m\r\n                break\r\n    \r\n    # ==============================================\r\n    # 使用方法\r\n    # ==============================================\r\n    try:\r\n        # 单个对象\r\n        if not isinstance(cad_text_data, list):\r\n            return method.Invoke(cad_text_data, [])\r\n        # 二维列表\r\n        elif not isinstance(cad_text_data[0], list):\r\n            res = []\r\n            for row in cad_text_data:\r\n                row_res = [method.Invoke(item, []) for item in row]\r\n                res.append(row_res)\r\n            return res\r\n        # 一维列表\r\n        else:\r\n            return [method.Invoke(item, []) for item in cad_text_data]\r\n    \r\n    except Exception as e:\r\n        return f\"错误：{str(e)}\"\r\n\r\ncad_text_data = _cad_text_data_from_layers()[\"CADTextData[][]\"]\r\nOUT = _cad_text_data_text_value(cad_text_data)\r\n\r\n#OUT = cad_text_data",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "61b9f7ce3b654fac89a22a3c2300e8aa",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "73e309a95515482eaed7cb1eae45bec9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d9ce38db6d5b483db72fd9e581d88f83",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8c3085c244d24b74a250545a89344fb2",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ceaf25e74ff141e39ef213757294ff02",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4bd7b258ea3d4d0682d3bb3ba913bbe9",
+          "Name": "OUT",
+          "Description": "Python 脚本结果",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "运行嵌入 Python 脚本。"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "943b98558a0e4b849bb17f1c99a70409",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "f825a620622446b5b250ac9649cf3011",
+          "Name": "importInstance",
+          "Description": "Input the ImportInstance to convert to curves.\n\nImportInstance",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a267c8b25fcf40df972ed384354ff0f7",
+          "Name": "layerNames",
+          "Description": "Input the layer names to filter and convert text elements. Leave unconnected to convert text on all layers. Names are case-sensitive.\n\nstring[]\n默认值 : []",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5c951e7bccf146c6a1cb0f3ead37b42e",
+          "Name": "CADTextData[][]",
+          "Description": "CADTextData[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7182067f0f414297b0098718b1b66e0b",
+          "Name": "layerKeys[]",
+          "Description": "string[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "CADTextData.FromLayers@Revit.Elements.ImportInstance,string[]",
+      "Replication": "Auto",
+      "Description": "Extract text from a CAD link or import by layer name. Works recursively to extract text from CAD blocks regardless of any nested depth. The node also avoids exploding the CAD instance, so it is not affected by Revits 10,000 element import limit! \r\rVisit bimorph.com/bimorph-nodes for support\n\nCADTextData.FromLayers (importInstance: ImportInstance, layerNames: string[] = []): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "dd2e66cb11b54f60994c4fa6e200b10d",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "5a389f2479fc4ef3b1ca9351906cb432",
+          "Name": "cADTextData",
+          "Description": "CADTextData",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2673eb77181843b8aa0996133f42d22e",
+          "Name": "string",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "CADTextData.TextValue",
+      "Replication": "Auto",
+      "Description": "The text value of this CADTextData object. \r\rVisit bimorph.com/bimorph-nodes for support\n\nCADTextData.TextValue: string"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "027728c22be6479d9d1ba67116e9558a",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        {
+          "Id": "f4914a196e154120b772c136b65d346a",
+          "Name": "t1",
+          "Description": "t1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d5fee8ade5ff453bbcf8f49e5839627a",
+          "Name": "",
+          "Description": "point1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "允许直接编写 DesignScript 代码",
+      "Code": "point1 = CADTextData.OriginPoint(t1);"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "382aed50cf134dce9bcbc1178aa3a375",
+      "End": "73e309a95515482eaed7cb1eae45bec9",
+      "Id": "d4f63e26dbaa41839d6ecd1d4724f6bb",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e38093241613489faf2ceae952d2ad09",
+      "End": "2fceb4c515b54ebcaccb5beb62c7aa16",
+      "Id": "21578619b4ab45c68da1baa2ebde8aee",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "bimorphNodes",
+      "Version": "4.2.4",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "7833a9496e014a3b877f3977f72379ee",
+        "943b98558a0e4b849bb17f1c99a70409",
+        "dd2e66cb11b54f60994c4fa6e200b10d"
+      ]
+    }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "特性",
+      "Version": "2.19",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "6.1",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "无",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.19.3.6394",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "背景预览(_B)",
+      "EyeX": -244.29049682617188,
+      "EyeY": 68052.6640625,
+      "EyeZ": 11523.0830078125,
+      "LookX": 239.40377807617188,
+      "LookY": -68041.6640625,
+      "LookZ": -11531.0595703125,
+      "UpX": 0.01924557238817215,
+      "UpY": 0.37460541725158691,
+      "UpZ": -0.92698466777801514
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "08c5032bfc9943f482417d1c166250f3",
+        "Name": "All Elements of Class",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -506.78073702888128,
+        "Y": -431.05878869107841
+      },
+      {
+        "Id": "3054792868f049cc87a668df9b04f13c",
+        "Name": "Element Classes",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -766.13861024125333,
+        "Y": -429.0806656722167
+      },
+      {
+        "Id": "7833a9496e014a3b877f3977f72379ee",
+        "Name": "CAD.CurvesFromCADLayers",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -802.12522080526946,
+        "Y": -178.49468169986159
+      },
+      {
+        "Id": "eaeb3611b058465ca926035cc2c0c892",
+        "Name": "Code Block",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -446.66937623045203,
+        "Y": -222.41717162980609
+      },
+      {
+        "Id": "61b9f7ce3b654fac89a22a3c2300e8aa",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -146.73830231330538,
+        "Y": -438.38078310108136
+      },
+      {
+        "Id": "943b98558a0e4b849bb17f1c99a70409",
+        "Name": "CADTextData.FromLayers",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 381.29264239163308,
+        "Y": -74.9432288389815
+      },
+      {
+        "Id": "dd2e66cb11b54f60994c4fa6e200b10d",
+        "Name": "CADTextData.TextValue",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 565.19257450321231,
+        "Y": -321.7822821179484
+      },
+      {
+        "Id": "027728c22be6479d9d1ba67116e9558a",
+        "Name": "Code Block",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 573.16652426101928,
+        "Y": -520.334353980223
+      }
+    ],
+    "Annotations": [],
+    "X": 732.1580288564752,
+    "Y": 514.36606570015249,
+    "Zoom": 0.75724628632923419
+  }
+}
